@@ -1,4 +1,4 @@
-# debug_tools
+# debug-tools
 
 A place to put some useful scripts to use when debugging in Linux.
 
