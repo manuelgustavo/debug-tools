@@ -1,0 +1,41 @@
+#!/bin/bash
+# set -x
+set -euo pipefail
+
+usage="$(basename "$0") [--reset] -- Disables apport and enable crash dumps in the format core.[PID].
+
+where:
+    --help   : show this help text.
+    --reset  : restores the default settings in ubuntu."
+
+if [ $# -eq 0 ]
+then
+    sudo sed -ie "s/enabled=1/enabled=0/" /etc/default/apport /etc/sysctl.d/10-ptrace.conf
+    echo "kernel.core_pattern = core.%e.%p.%s.%t" | sudo tee /etc/sysctl.d/60-core-pattern.conf 1>/dev/null
+    cat /proc/sys/kernel/core_pattern | sudo tee /etc/sysctl.d/60-core-pattern.conf.backup 1>/dev/null
+    echo 'core.%e.%p.%s.%t' | sudo tee /proc/sys/kernel/core_pattern 1>/dev/null
+    sudo sed -ie "s/^\#\*               soft    core            0/\*               soft    core            unlimited/" /etc/security/limits.conf
+    ulimit -c unlimited
+    echo "core dump pattern set to \"core.%e.%p.%s.%t\""
+    exit 0
+fi
+
+if [[ "${1:-}" == "--reset" ]]
+then
+    sudo sed -ie "s/enabled=0/enabled=1/" /etc/default/apport /etc/sysctl.d/10-ptrace.conf
+    sudo rm -fr /etc/sysctl.d/60-core-pattern.conf
+    if [ -e /etc/sysctl.d/60-core-pattern.conf.backup ]
+    then
+        cat /etc/sysctl.d/60-core-pattern.conf.backup | sudo tee /proc/sys/kernel/core_pattern 1>/dev/null
+        sudo rm -fr /etc/sysctl.d/60-core-pattern.conf.backup
+    fi
+    sudo sysctl --system 1>/dev/null 2>&1
+    sudo sed -ie "s/^\*               soft    core            unlimited/#\*               soft    core            0/" /etc/security/limits.conf
+    echo "core dump configuration reset"
+elif [[ "${1:-}" == "--help" ]]
+then
+    echo "${usage}"
+else
+    echo "Unknown option ${1}"
+    echo "${usage}"
+fi
