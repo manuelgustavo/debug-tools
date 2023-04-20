@@ -40,7 +40,7 @@ Disables enables the creation of crash dumps with the format [workdir]/core.[PRO
 ./core-dump --reset
 ```
 
-## mem
+## mem.sh
 
 Displays the memory used by a process
 
