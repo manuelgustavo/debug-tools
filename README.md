@@ -22,20 +22,28 @@ Permanently sets ptrace_scope.
 ./ptrace_scope 1
 ```
 
-## core_dump
+## core-dump
 
 Disables enables the creation of crash dumps with the format [workdir]/core.[PROCESS NAME].[PID].[SIGNAL].[TIME SINCE EPOCH]
 
-### core_dump examples
+### core-dump examples
 
 **Enabling**
 
 ``` bash
-./core_dump 
+./core-dump 
 ```
 
 **Resetting the configuration (according to Ubuntu 20.04)**
 
 ``` bash
-./core_dump --reset
+./core-dump --reset
+```
+
+## mem
+
+Displays the memory used by a process
+
+``` bash
+./mem.sh [PROCESS NAME]
 ```
