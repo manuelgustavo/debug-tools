@@ -11,12 +11,15 @@ where:
 if [ $# -eq 0 ]
 then
     sudo sed -ie "s/enabled=1/enabled=0/" /etc/default/apport /etc/sysctl.d/10-ptrace.conf
-    echo "kernel.core_pattern = core.%e.%p.%s.%t" | sudo tee /etc/sysctl.d/60-core-pattern.conf 1>/dev/null
+    echo 'kernel.core_pattern = core.%e.%p.%s.%t' | sudo tee /etc/sysctl.d/60-core-pattern.conf 1>/dev/null
     cat /proc/sys/kernel/core_pattern | sudo tee /etc/sysctl.d/60-core-pattern.conf.backup 1>/dev/null
     echo 'core.%e.%p.%s.%t' | sudo tee /proc/sys/kernel/core_pattern 1>/dev/null
     sudo sed -ie "s/^\#\*               soft    core            0/\*               soft    core            unlimited/" /etc/security/limits.conf
     ulimit -c unlimited
-    echo "core dump pattern set to \"core.%e.%p.%s.%t\""
+    echo 'core dump pattern set to "core.%e.%p.%s.%t"'
+    echo 'A reboot is recommended.'
+    echo 'Otherwise, call "ulimit -c unlimited" to activate for the current session'
+
     exit 0
 fi
 
@@ -31,7 +34,7 @@ then
     fi
     sudo sysctl --system 1>/dev/null 2>&1
     sudo sed -ie "s/^\*               soft    core            unlimited/#\*               soft    core            0/" /etc/security/limits.conf
-    echo "core dump configuration reset"
+    echo 'core dump configuration reset'
 elif [[ "${1:-}" == "--help" ]]
 then
     echo "${usage}"
