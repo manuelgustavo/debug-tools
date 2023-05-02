@@ -1,6 +1,6 @@
 # debug-tools
 
-A place to put some useful scripts to use when debugging in Linux.
+A place to put some useful scripts to use when debugging on Linux.
 
 > Tested in Ubuntu 20.04
 
